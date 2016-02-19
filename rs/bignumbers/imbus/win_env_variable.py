@@ -1,3 +1,5 @@
+""" This module is taken from http://code.activestate.com/recipes/416087-persistent-environment-variables-on-windows/ """
+
 from winreg import *
 import os, sys#, win32gui, win32con
 
