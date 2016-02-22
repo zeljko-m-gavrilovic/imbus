@@ -3,14 +3,15 @@
 from AddNewVariableGui import AddNewGui
 from ImportGui import ImportGui
 import Tkinter as tk
-from WinRegistryService import WinRegistryService
+from WinRegistryService import WinUserRegistryService
 
 
 class Application(tk.Frame):
     def __init__(self, root):
         tk.Frame.__init__(self, root)
         self.root = root
-        self.winRegistryService = WinRegistryService()
+        self.winUserRegistryService = WinUserRegistryService()
+        self.winSystemRegistryService = WinSystemRegistryService()
         self.populate()
     def refresh(self):
         if self.header:
@@ -21,7 +22,15 @@ class Application(tk.Frame):
             self.buttons.destroy()
         self.populate()    
     def populate(self):
-        self.envVariables = self.winRegistryService.getAllEnvVariable()
+
+        self.envVariables = self.winUserRegistryService.getAllEnvVariable()
+        try:
+            systemVars = self.winSystemRegistryService.getAllEnvVariable()
+            self.envVariables.extend(systemVars)
+        except EnvironmentError:
+            pass
+
+
         # header panel
         self.header = tk.Canvas(root)
         separatorLabel = tk.Label(self.header, text=u"Environment variables",
