@@ -1,92 +1,89 @@
-import Tkinter as tk
 
+
+from AddNewVariableGui import AddNewGui
 from ImportGui import ImportGui
+import Tkinter as tk
+from WinRegistryService import WinRegistryService
 
 
-class Example(tk.Frame):
+class Application(tk.Frame):
     def __init__(self, root):
         tk.Frame.__init__(self, root)
-        self.canvas = tk.Canvas(root, borderwidth=0, background="#ffffff")
+        self.root = root
+        self.winRegistryService = WinRegistryService()
+        self.populate()
+    def refresh(self):
+        if self.header:
+            self.header.destroy()
+        if self.tableCanvas:
+            self.tableCanvas.destroy()
+        if self.buttons:
+            self.buttons.destroy()
+        self.populate()    
+    def populate(self):
+        self.envVariables = self.winRegistryService.getAllEnvVariable()
+        # header panel
+        self.header = tk.Canvas(root)
+        separatorLabel = tk.Label(self.header, text=u"Environment variables",
+                                  anchor="nw", fg="white", bg="gray")
+        separatorLabel.pack(fill="x")
+        self.header.pack(fill="x")
+        
+        # table panel        
+        self.tableCanvas = tk.Canvas(root)
+        self.tableCanvas.pack(fill="both", expand=True)
+        self.tableFrame = tk.Frame(self.tableCanvas, background="yellow")
+        
+        self.canvas = tk.Canvas(self.tableCanvas, borderwidth=0, background="#ffffff")
         self.frame = tk.Frame(self.canvas, background="#ffffff")
-        self.vsb = tk.Scrollbar(root, orient="vertical", command=self.canvas.yview)
+        self.vsb = tk.Scrollbar(self.tableCanvas, orient="vertical", command=self.canvas.yview)
         self.canvas.configure(yscrollcommand=self.vsb.set)
 
         self.vsb.pack(side="right", fill="y")
         self.canvas.pack(side="left", fill="both", expand=True)
+        
         self._frame_id = self.canvas.create_window(0, 0, window=self.frame, anchor="nw")
         self.canvas.bind("<Configure>", self.onFrameResize)
-
-        self.envVariables = [("system", "PYTHON_HOME", "c:\\dev\python27"),
-                             ("system", "JAVA_HOME", "c:\\dev\java8"),
-                             ("system", "MYSQL_HOME", "c:\\dev\mysql5"),
-                             ("system", "JAVA_HOME", "c:\\dev\java8"),
-                             ("system", "MYSQL_HOME", "c:\\dev\mysql5"),
-                             ("system", "JAVA_HOME", "c:\\dev\java8"),
-                             ("system", "MYSQL_HOME", "c:\\dev\mysql5"),
-                             ("system", "JAVA_HOME", "c:\\dev\java8"),
-                             ("system", "MYSQL_HOME", "c:\\dev\mysql5"),
-                             ("system", "JAVA_HOME", "c:\\dev\java8"),
-                             ("system", "MYSQL_HOME", "c:\\dev\mysql5"),
-                             ("system", "JAVA_HOME", "c:\\dev\java8"),
-                             ("system", "MYSQL_HOME", "c:\\dev\mysql5"),
-                             ("system", "JAVA_HOME", "c:\\dev\java8"),
-                             ("system", "MYSQL_HOME", "c:\\dev\mysql5"),
-                             ("system", "JAVA_HOME", "c:\\dev\java8"),
-                             ("system", "MYSQL_HOME", "c:\\dev\mysql5"),
-                             ("system", "JAVA_HOME", "c:\\dev\java8"),
-                             ("system", "MYSQL_HOME", "c:\\dev\mysql5"),
-                             ("system", "MVN_HOME", "c:\\dev\maven3")
-                             ]
-
-        self.populate()
-
-    def populate(self):
-        # self.nameModel = tk.StringVar()
-        # self.nameModel.set(u"Enter name of the variable here.")
-        # self.nameEntry = tk.Entry(self.frame, textvariable=self.nameModel)
-        # self.nameEntry.grid(column=0, row=0, sticky='EW')
-        # # self.nameEntry.bind("<Return>", self.OnPressEnter)
-        #
-        # self.valueModel = tk.StringVar()
-        # self.valueModel.set(u"Enter the value of the variable here.")
-        # self.valueEntry = tk.Entry(self.frame, textvariable=self.valueModel)
-        # self.valueEntry.grid(column=1, row=0, sticky='EW')
-        # self.valueEntry.bind("<Return>", self.OnPressEnter)
-
-        button = tk.Button(self.frame, text=u"Add new", command=self.importEnv)
-        button.grid(column=1, row=0, sticky='EW')
-
-        button = tk.Button(self.frame, text=u"Import", command=self.importEnv)
-        button.grid(column=2, row=0, sticky='EW')
-
-        self.separatorModel = tk.StringVar()
-        separatorLabel = tk.Label(self.frame, textvariable=self.separatorModel,
-                                  anchor="w", fg="white", bg="gray")
-        separatorLabel.grid(column=0, row=1, columnspan=3, sticky='EW')
-        self.separatorModel.set(u"System environment variables")
-        print "initialize method len(self.t)" + str(len(self.envVariables))
 
         for i in range(len(self.envVariables)):
             cellTypeModel = tk.StringVar()
             cellTypeModel.set(self.envVariables[i][0])
             typeCell = tk.Entry(self.frame, textvariable=cellTypeModel)
-            typeCell.grid(row=i + 2, column=0, sticky='EW')
+            typeCell.grid(row=i + 1, column=0, sticky='EW')
 
             cellNameModel = tk.StringVar()
             cellNameModel.set(self.envVariables[i][1])
             nameCell = tk.Entry(self.frame, textvariable=cellNameModel)
-            nameCell.grid(row=i + 2, column=1, sticky='EW')
+            nameCell.grid(row=i + 1, column=1, sticky='EW')
 
             cellValueModel = tk.StringVar()
             cellValueModel.set(self.envVariables[i][2])
             valueCell = tk.Entry(self.frame, textvariable=cellValueModel)
-            valueCell.grid(row=i + 2, column=2, sticky='EW')
+            valueCell.grid(row=i + 1, column=2, sticky='EW')
             # self.cells.append((nameCell, valueCell))
+            
+            editButton = tk.Button(self.frame, text=u"Edit", command=lambda: self.edit(self.envVariables[i][1], self.envVariables[i][2]))
+            editButton.grid(row=i + 1, column=3, sticky='EW')
+            
+            removeButton = tk.Button(self.frame, text=u"Remove", command=lambda: self.remove(self.envVariables[i][1]))
+            removeButton.grid(row=i + 1, column=4, sticky='EW')
 
             self.frame.grid_columnconfigure(0, weight=1)
-            self.frame.grid_columnconfigure(1, weight=8)
-            self.frame.grid_columnconfigure(2, weight=1)
-
+            self.frame.grid_columnconfigure(1, weight=2)
+            self.frame.grid_columnconfigure(2, weight=6)
+            self.frame.grid_columnconfigure(3, weight=1)
+            self.frame.grid_columnconfigure(4, weight=1)
+            
+        # buttons panel
+        self.buttons = tk.Canvas(root)
+        importButton = tk.Button(self.buttons, text=u"Import", command=self.importEnv)
+        importButton.pack(side="right")
+        
+        addButton = tk.Button(self.buttons, text=u"Add new", command=self.addNew)
+        addButton.pack(side="right")
+        
+        self.buttons.pack(fill="x")
+        
     def onFrameResize(self, event):
         '''Reset the scroll region to encompass the inner frame'''
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
@@ -107,10 +104,23 @@ class Example(tk.Frame):
         self.valueEntry.focus_set()
         self.valueEntry.selection_range(0, tk.END)
 
+    def addNew(self):
+        newWindow = tk.Toplevel(self)
+        AddNewGui(newWindow, self).pack(side="top", fill="both", expand=True)
+        self.after(1, lambda: newWindow.focus_force())
+    
+    def edit(self, name, value):
+        newWindow = tk.Toplevel(self)
+        AddNewGui(newWindow, self, name, value).pack(side="top", fill="both", expand=True)
+        self.after(1, lambda: newWindow.focus_force())
+    
+    def remove(self, name):
+        self.winRegistryService.removeEnvVariable(name)
+        self.refresh()
+        
     def importEnv(self):
         newWindow = tk.Toplevel(self)
-        # ImportGui(newWindow)
-        ImportGui(newWindow).pack(side="top", fill="both", expand=True)
+        ImportGui(newWindow, self).pack(side="top", fill="both", expand=True)
         self.after(1, lambda: newWindow.focus_force())
 
 
@@ -126,5 +136,5 @@ if __name__ == "__main__":
     root.geometry("%dx%d+%d+%d" % (appSize + (x, y)))
     root.update_idletasks()  # Force geometry update
 
-    Example(root).pack(side="top", fill="both", expand=True)
+    Application(root)  # .pack(side="top", fill="both", expand=True)
     root.mainloop()
