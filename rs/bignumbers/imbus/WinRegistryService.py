@@ -7,48 +7,51 @@ Created on Feb 22, 2016
 from _winreg import *
 
 
-class WinUserRegistryService:
+class WinRegistryEnvironmentVariables:
     PATH_SEPARATOR = ';'
-    #PATH = r'\CurrentControlSet\Control\Session Manager\Environment'
-    #SYSTEM_PATH = r'SYSTEM' + PATH;
-    #USER_PATH = r'USER' + PATH;
-
-    def __init__(self):
-        #self.path = self.USER_PATH;
-        # self.reg = ConnectRegistry(None, HKEY_USERS)
-        # self.key = OpenKey(self.reg, self.path, 0, KEY_ALL_ACCESS)
-        self.key = OpenKeyEx(self.getKey(), 'Environment', 0, KEY_ALL_ACCESS)
+    
+    def __init__(self, scope):
+        assert scope in ('user', 'system')
+        self.scope = scope
+        if scope == 'user':
+            self.root = HKEY_CURRENT_USER
+            self.subkey = 'Environment'
+        else:
+            self.root = HKEY_LOCAL_MACHINE
+            self.subkey = r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment'
 
     def getAllEnvVariable(self):
         result = []
-        for i in range(QueryInfoKey(self.key)[1]):
-            name, value, type = EnumValue(self.key, i)
-            result.append((self.getType(), name, value))
+        key = OpenKeyEx(self.root, self.subkey, 0, KEY_ALL_ACCESS)
+        for i in range(QueryInfoKey(key)[1]):
+            name, value, type = EnumValue(key, i)
+            result.append((self.scope, name, value))
+        CloseKey(key)    
         return result
-
-    def getType(self):
-        return "user"
-
-    def getKey(self):
-        return HKEY_CURRENT_USER
-
+    
     def getEnvVariable(self, name):
-        answer = QueryValueEx(self.key, name)
-        result = (self.getType(), name, answer[0])
-        return result
+        key = OpenKeyEx(self.root, self.subkey, 0, KEY_ALL_ACCESS)
+        answer = QueryValueEx(key, name)
+        result = (self.scope, name, answer[0])
+        CloseKey(key)
+        return result[2]
 
     def addEnvVariable(self, name, value):
         self.updateEnvVariable(name, value);
 
-    def updateEnvVariable(self, name, newValue):
-        value = newValue
-        if name.upper() == 'PATH':
-            value = self.getEnvVariable(name) + self.PATH_SEPARATOR + newValue
+    def updateEnvVariable(self, name, value):
+        #value = newValue
+#         if name.upper() == 'PATH':
+#             value = self.getEnvVariable(name) + self.PATH_SEPARATOR + newValue
         if value:
-            SetValueEx(self.key, name, 0, REG_EXPAND_SZ, value)
+            key = OpenKeyEx(self.root, self.subkey, 0, KEY_ALL_ACCESS)
+            SetValueEx(key, name, 0, REG_EXPAND_SZ, value)
+            CloseKey(key)
 
     def removeEnvVariable(self, name):
-        DeleteValue(self.key, name)
+        key = OpenKeyEx(self.root, self.subkey, 0, KEY_ALL_ACCESS)
+        DeleteValue(key, name)
+        CloseKey(key)
 
     def printVars(self, tuples):
         for t in tuples:
@@ -57,10 +60,9 @@ class WinUserRegistryService:
     def printVar(self, tuple):
         print("%s = %s" % (tuple[1], tuple[2]))
 
-
 if __name__ == "__main__":
-    wrs = WinUserRegistryService()
-    print "all variables"
+    wrs = WinRegistryEnvironmentVariables("user")
+    print "all user variables"
     wrs.printVars(wrs.getAllEnvVariable())
 
     print "TMP variable"
@@ -70,17 +72,10 @@ if __name__ == "__main__":
     print "you should see the variable testDevEnv"
     wrs.printVars(wrs.getAllEnvVariable())
 
-    print wrs.updateEnvVariable("testDevEnv", 'c:\\dev\wrong')
-    print "you should see the variable testDevEnv=c:\\dev\wrong"
+    print wrs.updateEnvVariable("testDevEnv", 'c:\\dev\updated')
+    print "you should see the variable testDevEnv=c:\\dev\updated"
     wrs.printVars(wrs.getAllEnvVariable())
 
     print wrs.removeEnvVariable("testDevEnv")
     print "you should not see the variable testDevEnv"
     wrs.printVars(wrs.getAllEnvVariable())
-
-class WinSystemRegistryService(WinUserRegistryService):
-    def getType(self):
-        return "system"
-
-    def getKey(self):
-        return HKEY_LOCAL_MACHINE

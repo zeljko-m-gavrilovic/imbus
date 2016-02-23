@@ -2,6 +2,7 @@ from ScrolledText import ScrolledText
 from tkFileDialog import askopenfilename
 
 import Tkinter as tk
+import tkMessageBox
 
 
 class ImportGui(tk.Frame):
@@ -9,6 +10,8 @@ class ImportGui(tk.Frame):
         tk.Frame.__init__(self, root)
         self.root = root
         self.parent = parent
+
+        self.scopeModel = tk.IntVar(0)        
         self.populate()
         
         appSize = (600, 400)
@@ -27,25 +30,26 @@ class ImportGui(tk.Frame):
         separatorLabel.grid(column=0, row=0, sticky="W", columnspan=4)
         separatorLabel.pack(fill="x")
         
-        # create a Text widget with a Scrollbar attached
         self.txt = ScrolledText(self, undo=True)
-        # self.txt['font'] = ('consolas', '12')
-        # self.txt.pack(expand=True, fill='both')
         self.txt.grid(column=0, row=1, sticky="EWNS", columnspan=4)
+        
+        self.scopeCheckbox = tk.Checkbutton(self, text="System", variable=self.scopeModel,
+                 onvalue=1, offvalue=0)
+        self.scopeCheckbox.grid(column=0, row=2, sticky='W')
 
         button = tk.Button(self, text=u"From file...", command=self.openFile)
-        button.grid(column=0, row=2, sticky='WE')
+        button.grid(column=0, row=3, sticky='WE')
 
         button = tk.Button(self, text=u"Clear content", command=self.clearContent)
-        button.grid(column=1, row=2, sticky='WE')
+        button.grid(column=1, row=3, sticky='WE')
 
         button = tk.Button(self, text=u"Save", command=self.save)
-        button.grid(column=2, row=2, sticky='WE')
+        button.grid(column=2, row=3, sticky='WE')
 
         button = tk.Button(self, text=u"Close", command=self.quit)
-        button.grid(column=3, row=2, sticky='WE')
+        button.grid(column=3, row=3, sticky='WE')
 
-        #self.grid_columnconfigure(0, weight=9)
+        # self.grid_columnconfigure(0, weight=9)
         self.grid_rowconfigure(0, weight=0)
         self.grid_rowconfigure(1, weight=1)
         self.grid_rowconfigure(2, weight=0)
@@ -68,15 +72,23 @@ class ImportGui(tk.Frame):
             self.clearContent();
             self.txt.insert("0.0", content)
             f.close()
+    
     def save(self):
         content = self.txt.get(1.0, "end")
         lines = [s.strip() for s in content.splitlines()]
         for line in lines:
             name, value = line.split("=")
             if name and value:
-                self.parent.winRegistryService.addEnvVariable(name, value)
-        self.parent.refresh()        
-
+                if self.scopeModel.get() == 0:
+                    self.parent.winUserRegistryService.addEnvVariable(name, value)
+                else:
+                    try:
+                        self.parent.winSystemRegistryService.addEnvVariable(name, value)
+                    except WindowsError:
+                        tkMessageBox.showwarning("Import environment variables", "Cannot persist changes. You need to open the application in the admin mode in order to change system environment variables...")
+                        break
+        self.parent.refresh()
+                
     def quit(self):
         self.root.destroy()
 
