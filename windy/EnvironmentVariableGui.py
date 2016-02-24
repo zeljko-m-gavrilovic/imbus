@@ -3,15 +3,8 @@ Created on Feb 22, 2016
 
 @author: zeljko.gavrilovic
 '''
-from tkFileDialog import askopenfilename
+import tkinter as tk
 
-import Tkinter as tk
-import tkMessageBox
-from ScrolledText import ScrolledText
-
-
-# from WinRegistryService import WinUserRegistryService
-# from WinRegistryService import WinRegistryService 
 class EnvironmentVariableGui(tk.Frame):
     def __init__(self, root, parent, name="", value="", scope="user", mode="new"):
         tk.Frame.__init__(self, root)
@@ -59,7 +52,7 @@ class EnvironmentVariableGui(tk.Frame):
         self.valueLabel = tk.Label(self, text="Value", anchor="nw")
         self.valueLabel.grid(column=0, row=2, sticky='NW')
         
-        self.txt = ScrolledText(self, undo=True)
+        self.txt = tk.scrolledtext.ScrolledText(self, undo=True)
         self.txt.grid(column=1, row=2, sticky="EWNS", columnspan=5)
         self.txt.configure(state='normal')
         self.txt.delete("0.0", "end")
@@ -69,6 +62,8 @@ class EnvironmentVariableGui(tk.Frame):
         self.scopeCheckbox = tk.Checkbutton(self, text="System", variable=self.scopeModel,
                  onvalue=1, offvalue=0)
         self.scopeCheckbox.grid(column=1, row=3, sticky='W')
+        if self.parent.restricted:
+            self.scopeCheckbox.configure(state='disabled')
         
         button = tk.Button(self, text=u"Save", command=self.save)
         button.grid(column=2, row=4, sticky='WE')
@@ -94,10 +89,10 @@ class EnvironmentVariableGui(tk.Frame):
 
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=7)
-        self.grid_columnconfigure(2, weight=1)
-        self.grid_columnconfigure(3, weight=1)
-        self.grid_columnconfigure(4, weight=1)
-        self.grid_columnconfigure(5, weight=1)
+        self.grid_columnconfigure(2, weight=0)
+        self.grid_columnconfigure(3, weight=0)
+        self.grid_columnconfigure(4, weight=0)
+        self.grid_columnconfigure(5, weight=0)
             
     def new(self):
         self.nameModel.set("")
@@ -106,6 +101,8 @@ class EnvironmentVariableGui(tk.Frame):
         self.scopeModel.set(0)
         self.txt.configure(state='normal')
         self.scopeCheckbox.configure(state='normal')
+        if self.parent.restricted:
+            self.scopeCheckbox.configure(state='disabled')
             
     def save(self):
         name = self.nameModel.get()
@@ -122,7 +119,7 @@ class EnvironmentVariableGui(tk.Frame):
                 self.scopeCheckbox.configure(state='disabled')
                 self.parent.refresh()
             except WindowsError:
-                tkMessageBox.showwarning("Add/update Environment variable", "Cannot persist changes. You need to open the application in the admin mode in order to change the system environment variables..."
+                tk.messagebox.showwarning("Add/update Environment variable", "Cannot persist changes. You need to open the application in the admin mode in order to change the system environment variables..."
         )
 
     def quit(self):

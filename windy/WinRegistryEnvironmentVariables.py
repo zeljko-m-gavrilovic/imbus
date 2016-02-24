@@ -4,10 +4,14 @@ Created on Feb 22, 2016
 @author: zeljko.gavrilovic
 '''
 
-from _winreg import *
+#from winreg import *
+from winreg import HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, OpenKeyEx, \
+    KEY_ALL_ACCESS, QueryInfoKey, EnumValue, CloseKey, QueryValueEx, SetValueEx, \
+    REG_EXPAND_SZ, DeleteValue
 
 
 class WinRegistryEnvironmentVariables:
+    """ This class is a service for CRUD operations on windows environment variables registry"""
     PATH_SEPARATOR = ';'
     
     def __init__(self, scope):
@@ -24,7 +28,7 @@ class WinRegistryEnvironmentVariables:
         result = []
         key = OpenKeyEx(self.root, self.subkey, 0, KEY_ALL_ACCESS)
         for i in range(QueryInfoKey(key)[1]):
-            name, value, type = EnumValue(key, i)
+            name, value, envType = EnumValue(key, i)
             result.append((self.scope, name, value))
         CloseKey(key)    
         return result
@@ -40,9 +44,6 @@ class WinRegistryEnvironmentVariables:
         self.updateEnvVariable(name, value);
 
     def updateEnvVariable(self, name, value):
-        #value = newValue
-#         if name.upper() == 'PATH':
-#             value = self.getEnvVariable(name) + self.PATH_SEPARATOR + newValue
         if value:
             key = OpenKeyEx(self.root, self.subkey, 0, KEY_ALL_ACCESS)
             SetValueEx(key, name, 0, REG_EXPAND_SZ, value)
@@ -57,25 +58,25 @@ class WinRegistryEnvironmentVariables:
         for t in tuples:
             self.printVar(t)
 
-    def printVar(self, tuple):
-        print("%s = %s" % (tuple[1], tuple[2]))
+    def printVar(self, envTuple):
+        print("%s = %s" % (envTuple[1], envTuple[2]))
 
 if __name__ == "__main__":
     wrs = WinRegistryEnvironmentVariables("user")
-    print "all user variables"
+    print("all user variables")
     wrs.printVars(wrs.getAllEnvVariable())
 
-    print "TMP variable"
+    print("TMP variable")
     wrs.printVar(wrs.getEnvVariable("TMP"))
 
-    print wrs.addEnvVariable("testDevEnv", 'c:\\dev')
-    print "you should see the variable testDevEnv"
+    wrs.addEnvVariable("testDevEnv", r'c:\\dev')
+    print("you should see the variable testDevEnv")
+    wrs.printVars(wrs.getAllEnvVariable())
+    
+    wrs.updateEnvVariable("testDevEnv", r'c:\\dev\updated')
+    print(r"you should see the variable testDevEnv=c:\\dev\updated")
     wrs.printVars(wrs.getAllEnvVariable())
 
-    print wrs.updateEnvVariable("testDevEnv", 'c:\\dev\updated')
-    print "you should see the variable testDevEnv=c:\\dev\updated"
-    wrs.printVars(wrs.getAllEnvVariable())
-
-    print wrs.removeEnvVariable("testDevEnv")
-    print "you should not see the variable testDevEnv"
+    wrs.removeEnvVariable("testDevEnv")
+    print("you should not see the variable testDevEnv")
     wrs.printVars(wrs.getAllEnvVariable())

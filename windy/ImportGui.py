@@ -1,8 +1,7 @@
-from ScrolledText import ScrolledText
-from tkFileDialog import askopenfilename
-
-import Tkinter as tk
-import tkMessageBox
+from tkinter.scrolledtext import ScrolledText
+from tkinter.filedialog import askopenfilename
+from tkinter.messagebox import showwarning
+import tkinter as tk
 
 
 class ImportGui(tk.Frame):
@@ -27,37 +26,39 @@ class ImportGui(tk.Frame):
     def populate(self):
         separatorLabel = tk.Label(self.root, text=u"Content to be imported",
                                   anchor="w", fg="white", bg="gray")
-        separatorLabel.grid(column=0, row=0, sticky="W", columnspan=4)
+        separatorLabel.grid(column=0, row=0, sticky="W", columnspan=6)
         separatorLabel.pack(fill="x")
         
         self.txt = ScrolledText(self, undo=True)
-        self.txt.grid(column=0, row=1, sticky="EWNS", columnspan=4)
+        self.txt.grid(column=0, row=1, sticky="EWNS", columnspan=6)
         
         self.scopeCheckbox = tk.Checkbutton(self, text="System", variable=self.scopeModel,
                  onvalue=1, offvalue=0)
         self.scopeCheckbox.grid(column=0, row=2, sticky='W')
+        if self.parent.restricted:
+            self.scopeCheckbox.configure(state='disabled')
 
         button = tk.Button(self, text=u"From file...", command=self.openFile)
-        button.grid(column=0, row=3, sticky='WE')
+        button.grid(column=2, row=3, sticky='E')
 
         button = tk.Button(self, text=u"Clear content", command=self.clearContent)
-        button.grid(column=1, row=3, sticky='WE')
+        button.grid(column=3, row=3, sticky='E')
 
         button = tk.Button(self, text=u"Save", command=self.save)
-        button.grid(column=2, row=3, sticky='WE')
+        button.grid(column=4, row=3, sticky='E')
 
         button = tk.Button(self, text=u"Close", command=self.quit)
-        button.grid(column=3, row=3, sticky='WE')
+        button.grid(column=5, row=3, sticky='E')
 
         # self.grid_columnconfigure(0, weight=9)
         self.grid_rowconfigure(0, weight=0)
         self.grid_rowconfigure(1, weight=1)
         self.grid_rowconfigure(2, weight=0)
         
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=1)
+        #self.grid_columnconfigure(0, weight=1)
+        #self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=1)
-        self.grid_columnconfigure(3, weight=1)
+        #self.grid_columnconfigure(3, weight=1)
 
 
     def clearContent(self):
@@ -85,7 +86,7 @@ class ImportGui(tk.Frame):
                     try:
                         self.parent.winSystemRegistryService.addEnvVariable(name, value)
                     except WindowsError:
-                        tkMessageBox.showwarning("Import environment variables", "Cannot persist changes. You need to open the application in the admin mode in order to change system environment variables...")
+                        showwarning("Import environment variables", "Cannot persist changes. You need to open the application in the admin mode in order to change system environment variables...")
                         break
         self.parent.refresh()
                 
