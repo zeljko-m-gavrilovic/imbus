@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='windy',
-      version='0.8',
+      version='0.8.2',
       description='Windy is an application for managing Windows user/system environment variables.',
       url='http://github.com/zeljko.m.gavrilovic/windy',
       author='BigNumbers',

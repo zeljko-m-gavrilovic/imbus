@@ -2,7 +2,6 @@ from tkinter.constants import END, YES, BOTH, X
 
 from EnvironmentVariableGui import EnvironmentVariableGui
 from ImportGui import ImportGui
-from MultiListbox import MultiListbox
 from WinRegistryEnvironmentVariables import WinRegistryEnvironmentVariables
 import tkinter.font as tkFont
 import tkinter as tk
