@@ -28,7 +28,7 @@ class Application(tk.Frame):
         separatorLabel = tk.Label(text=u"Environment variables", anchor="nw", fg="white", bg="gray")
         separatorLabel.pack(fill="x")
         
-        container = ttk.Frame()
+        container = tk.Frame()
         container.pack(fill='both', expand=True)
         # create a treeview with vertical scrollbar
         self.tree = ttk.Treeview(columns=self.header, show="headings")
@@ -92,8 +92,7 @@ class Application(tk.Frame):
     def addNew(self):
         newWindow = tk.Toplevel(self)
         EnvironmentVariableGui(newWindow, self, scope="user", mode="add").pack(side="top", fill="both", expand=True)
-        self.after(1, lambda: newWindow.focus_force())
-    
+        self.after(1, lambda: newWindow.focus_force())    
 
     def getSelected(self):
         curItem = self.tree.focus()
@@ -104,16 +103,23 @@ class Application(tk.Frame):
         return name, value, scope
 
     def edit(self):
-        name, value, scope = self.getSelected()
-        
+        try:
+            name, value, scope = self.getSelected()
+        except IndexError:
+            tk.messagebox.showinfo("Environment variable selection", "Please select a row to be edited")   
+            return;
         newWindow = tk.Toplevel(self)
         EnvironmentVariableGui(newWindow, self, name, value, scope, mode="edit").pack(side="top", fill="both", expand=True)
         self.after(1, lambda: newWindow.focus_force())
     
     def remove(self):
-        name, value, scope = self.getSelected()
+        try:
+            name, value, scope = self.getSelected()
+        except IndexError:
+            tk.messagebox.showinfo("Environment variable selection", "Please select a row to be removed")   
+            return;
         
-        result = tk.messagebox.askquestion("Delete", "Are you sure you want to delete the environment variable " + name + "?", icon="warning")
+        result = tk.messagebox.askquestion("Delete", "Are you sure you want to remove the environment variable " + name + "?", icon="warning")
         if result != "yes":
             return
         if(scope == "user"):
