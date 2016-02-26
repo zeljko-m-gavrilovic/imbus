@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='windy',
-    version='0.8.6',
+    version='0.8.8',
     packages = find_packages(),
     entry_points={
         "console_scripts": ['windy = windy.gui.application:main'],
