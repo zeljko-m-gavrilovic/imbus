@@ -120,7 +120,7 @@ class Application(tk.Frame):
         guiimport.EnvironmentVariableImport(newWindow, self).pack(side="top", fill="both", expand=True)
         self.after(1, lambda: newWindow.focus_force())
 
-if __name__ == "__main__":
+def main():
     root = tk.Tk()
     root.wm_title("Windy - Editor for Windows environment variables")
     appSize = (800, 600)
@@ -134,3 +134,6 @@ if __name__ == "__main__":
 
     Application(root)#.pack(side="top", fill="both", expand=True)
     root.mainloop()
+
+if __name__ == "__main__":
+    main()

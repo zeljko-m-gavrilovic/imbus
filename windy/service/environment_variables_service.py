@@ -6,16 +6,14 @@ Created on Feb 22, 2016
 
 #from winreg import *
 import winreg
-
-
+    
 class EnvironmentVariableService:
     """ This class is a service for CRUD operations on windows environment variables registry"""
     PATH_SEPARATOR = ';'
     
     def __init__(self, scope):
-        assert scope in ('user', 'system')
         self.scope = scope
-        if scope == 'user':
+        if scope == "user":
             self.root = winreg.HKEY_CURRENT_USER
             self.subkey = 'Environment'
         else:
