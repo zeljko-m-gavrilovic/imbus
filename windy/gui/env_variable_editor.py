@@ -1,15 +1,18 @@
+# -*- coding: utf-8 -*-
 '''
 Created on Feb 22, 2016
 
 @author: zeljko.gavrilovic
 '''
+import enum
+
 import tkinter as tk
+import tkinter.constants as tc
 import tkinter.scrolledtext as sc
 import tkinter.ttk as ttk
-import tkinter.constants as tc
 from windy.gui.locale import Locale
 import windy.service.environment_variables_service as envvarservice
-import enum
+
 
 class EnvironmentVariableEditor(ttk.Frame):
 

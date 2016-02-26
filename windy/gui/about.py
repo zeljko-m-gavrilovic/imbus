@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 Created on Feb 22, 2016
 
@@ -34,6 +35,7 @@ class About(ttk.Frame):
         self.txt.grid(column=0, row=0, sticky=tc.NSEW, columnspan=2)
         self.txt.delete("0.0", tc.END)
         self.txt.insert("0.0", Locale.about_desc.value)
+        self.txt.configure(state=tc.DISABLED)
 
         button = ttk.Button(self, text=Locale.close.value, command=self.quit)
         button.grid(column=1, row=1, sticky=tc.EW)

@@ -1,9 +1,15 @@
+# -*- coding: utf-8 -*-
+'''
+Created on Feb 22, 2016
+
+@author: zeljko.gavrilovic
+'''
 import tkinter as tk
 import tkinter.constants as tc
 import tkinter.messagebox as mb
 import tkinter.ttk as ttk
-import windy.gui.env_variable_editor as guieditor
 import windy.gui.about as guiabout
+import windy.gui.env_variable_editor as guieditor
 import windy.gui.env_variable_import as guiimport
 from windy.gui.locale import Locale
 import windy.service.environment_variables_service as envvarservice
@@ -40,7 +46,7 @@ class Application(tk.Frame):
         try:
             self.winSystemEnvVarService.getEnvVariable("PATH")
         except WindowsError:
-            # print("System environment variables can't be loaded because you need to run the application in the admin mode...")
+            print("System environment variables can't be loaded because you need to run the application in the admin mode...")
             self.restricted = True
             mb.showwarning(Locale.system_permission_title.value, Locale.system_permission_desc.value)
     
@@ -113,8 +119,9 @@ class Application(tk.Frame):
         try:
             name, value, scope = self.getSelected()
         except IndexError:
-            tk.messagebox.showinfo(Locale.env_var_selection.value, Locale.env_var_selection.edit.value)   
+            tk.messagebox.showinfo(Locale.env_var_selection.value, Locale.env_var_selection_edit.value)   
             return;
+        
         newWindow = tk.Toplevel(self)
         guieditor.EnvironmentVariableEditor(newWindow, self, name, value, envvarservice.Scope[scope], True).pack(side=tc.TOP, fill=tc.BOTH, expand=True)
         self.after(1, lambda: newWindow.focus_force())

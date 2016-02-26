@@ -1,8 +1,15 @@
+# -*- coding: utf-8 -*-
+'''
+Created on Feb 22, 2016
+
+@author: zeljko.gavrilovic
+'''
 import tkinter as tk
-import tkinter.ttk as ttk
 import tkinter.constants as tc
 import tkinter.filedialog as fd
+import tkinter.ttk as ttk
 from windy.gui.locale import Locale
+
 
 class EnvironmentVariableImport(ttk.Frame):
     def __init__(self, root, parent):
@@ -63,7 +70,7 @@ class EnvironmentVariableImport(ttk.Frame):
             self.scopeCheckbox.configure(state=tc.DISABLED)
 
     def clearContent(self):
-        #self.txt.delete("0.0", "end")
+        # self.txt.delete("0.0", "end")
         self.refresh()
 
     def openFile(self):
@@ -87,7 +94,7 @@ class EnvironmentVariableImport(ttk.Frame):
                 name, value = line.split("=")
             except ValueError:
                 tk.messagebox.showinfo(Locale.bad_format_title.value, Locale.bad_format_desc.value.format(line=line))
-                break
+                continue
             
             name = name.strip()
             value = value.strip()

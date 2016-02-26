@@ -1,9 +1,8 @@
 from setuptools import setup, find_packages
 
-
 setup(
     name='windy',
-    version='0.8.8',
+    version='0.9',
     packages = find_packages(),
     entry_points={
         "console_scripts": ['windy = windy.gui.application:main'],
@@ -21,6 +20,9 @@ setup(
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
         "Operating System :: Microsoft :: Windows",
+        "Topic :: Desktop Environment",
+        "License :: Freeware",
+        "Topic :: Utilities"
       ],
     keywords=["windows", "environment", "variables", "path", "developer", "java"],
     zip_safe=False

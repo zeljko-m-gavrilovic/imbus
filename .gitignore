@@ -13,3 +13,4 @@ rs/**/.gitignore
 .mvn
 .build
 build
+.settings
