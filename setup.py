@@ -9,7 +9,7 @@ setup(
         "console_scripts": ['windy = windy.gui.application:main'],
         'gui_scripts': ['windy = windy.gui.application:main', ]
         },
-    description='Windy is an application for managing Windows user/system environment variables.',
+    description='windy is an application for managing Windows user/system environment variables.',
     url='http://github.com/zeljko.m.gavrilovic/windy',
     author='BigNumbers',
     author_email='zeljko.m.gavrilovic@gmail.com',

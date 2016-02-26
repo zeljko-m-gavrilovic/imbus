@@ -4,21 +4,21 @@ Created on Feb 22, 2016
 @author: zeljko.gavrilovic
 '''
 
-#from winreg import *
 import winreg
+import enum
     
-class EnvironmentVariableService:
+class EnvironmentVariableService(object):
     """ This class is a service for CRUD operations on windows environment variables registry"""
     PATH_SEPARATOR = ';'
     
     def __init__(self, scope):
         self.scope = scope
-        if scope == "user":
+        if scope is Scope.user:
             self.root = winreg.HKEY_CURRENT_USER
-            self.subkey = 'Environment'
+            self.subkey = Scope.user.value 
         else:
             self.root = winreg.HKEY_LOCAL_MACHINE
-            self.subkey = r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment'
+            self.subkey = Scope.system.value
 
     def getAllEnvVariable(self):
         result = []
@@ -56,7 +56,12 @@ class EnvironmentVariableService:
 
     def printVar(self, envTuple):
         print("%s = %s" % (envTuple[1], envTuple[2]))
-
+        
+class Scope(enum.Enum):
+    user = 'Environment'
+    system = r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment'       
+        
+""" improvised test, todo create a real unit test """
 if __name__ == "__main__":
     wrs = EnvironmentVariableService("user")
     print("all user variables")

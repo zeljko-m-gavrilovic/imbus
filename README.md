@@ -10,4 +10,8 @@ Features
 * Add/update/remove of the environment variables
 * Batch import of the environment variables from a file or a clipboard
 * Resizable GUI with the examined views
-* Absolutely free and open source 
+* Absolutely free and open source
+
+Homepage
+-------
+[link](https://github.com/zeljko-m-gavrilovic/windy)

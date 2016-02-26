@@ -6,17 +6,22 @@ Created on Feb 22, 2016
 import tkinter as tk
 import tkinter.scrolledtext as sc
 import tkinter.ttk as ttk
+import tkinter.constants as tc
+from windy.gui.locale import Locale
+import windy.service.environment_variables_service as envvarservice
+import enum
 
 class EnvironmentVariableEditor(ttk.Frame):
 
-    def __init__(self, root, parent, name="", value="", scope="user", mode="new"):
+    def __init__(self, root, parent, name="", value="", scope=envvarservice.Scope.user, edit_mode=False):
         ttk.Frame.__init__(self, root)
         self.root = root
         self.parent = parent
-        self.mode = mode
+        self.edit_mode = edit_mode
         
+        root.wm_title(Locale.edit.value)
         self.create_gui()
-        self.refresh(name, value, mode, scope);
+        self.refresh(name, value, edit_mode, scope);
                 
         appSize = (600, 400)
         w = root.winfo_screenwidth()
@@ -28,39 +33,38 @@ class EnvironmentVariableEditor(ttk.Frame):
         self.root.update_idletasks()  # Force geometry update
 
     def create_gui(self):
-        separatorLabel = ttk.Label(self, text="Enter the new environment variable", anchor="nw")
-        separatorLabel.grid(column=0, row=0, sticky="EW", columnspan=6)
+        separatorLabel = ttk.Label(self, text=Locale.env_var_title.value, anchor=tc.NW)
+        separatorLabel.grid(column=0, row=0, sticky=tc.EW, columnspan=6)
         
-        self.nameLabel = ttk.Label(self, text="Name", anchor="nw")
-        self.nameLabel.grid(column=0, row=1, sticky='EW')
+        self.nameLabel = ttk.Label(self, text=Locale.name.value, anchor=tc.NW)
+        self.nameLabel.grid(column=0, row=1, sticky=tc.EW)
         
         self.nameModel = tk.StringVar()
         self.nameEntry = ttk.Entry(self, textvariable=self.nameModel)
-        self.nameEntry.grid(column=1, row=1, sticky='EW', columnspan=5)
+        self.nameEntry.grid(column=1, row=1, sticky=tc.EW, columnspan=5)
         
-        self.valueLabel = ttk.Label(self, text="Value", anchor="nw")
-        self.valueLabel.grid(column=0, row=2, sticky='NW')
+        self.valueLabel = ttk.Label(self, text=Locale.value.value, anchor=tc.NW)
+        self.valueLabel.grid(column=0, row=2, sticky=tc.NW)
         
-        #self.valueModel = tk.StringVar()
         self.txt = sc.ScrolledText(self, undo=True)
-        self.txt.grid(column=1, row=2, sticky="EWNS", columnspan=5)
+        self.txt.grid(column=1, row=2, sticky=tc.NSEW, columnspan=5)
         
         self.scopeModel = tk.IntVar()        
-        self.scopeCheckbox = ttk.Checkbutton(self, text="System", variable=self.scopeModel,
+        self.scopeCheckbox = ttk.Checkbutton(self, text=Locale.system.value, variable=self.scopeModel,
                  onvalue=1, offvalue=0)
-        self.scopeCheckbox.grid(column=1, row=3, sticky='W')
+        self.scopeCheckbox.grid(column=1, row=3, sticky=tc.W)
         
-        button = ttk.Button(self, text="Save", command=self.save)
-        button.grid(column=2, row=4, sticky='WE')
+        button = ttk.Button(self, text=Locale.save.value, command=self.save)
+        button.grid(column=2, row=4, sticky=tc.EW)
 
-        button = ttk.Button(self, text="New", command=self.new)
-        button.grid(column=3, row=4, sticky='WE')
+        button = ttk.Button(self, text=Locale.new.value, command=self.new)
+        button.grid(column=3, row=4, sticky=tc.EW)
 
-        button = ttk.Button(self, text="Cancel", command=self.quit)
-        button.grid(column=4, row=4, sticky='WE')
+        button = ttk.Button(self, text=Locale.cancel.value, command=self.quit)
+        button.grid(column=4, row=4, sticky=tc.EW)
 
-        button = ttk.Button(self, text="Close", command=self.quit)
-        button.grid(column=5, row=4, sticky='WE')
+        button = ttk.Button(self, text=Locale.close.value, command=self.quit)
+        button.grid(column=5, row=4, sticky=tc.EW)
 
         self.grid_rowconfigure(0, weight=0)
         self.grid_rowconfigure(1, weight=0)
@@ -75,60 +79,55 @@ class EnvironmentVariableEditor(ttk.Frame):
         self.grid_columnconfigure(4, weight=0)
         self.grid_columnconfigure(5, weight=0)
     
-    def refresh(self, name, value, mode="new", scope="user"):
+    def refresh(self, name, value, edit_mode=False, scope=envvarservice.Scope.user):
         self.nameModel.set(name)
         
-        self.txt.configure(state='normal')
-        self.txt.delete("0.0", "end")
+        self.txt.configure(state=tc.NORMAL)
+        self.txt.delete("0.0", tc.END)
         self.txt.insert("0.0", value)
         
-        if scope == "user":
+        if scope is envvarservice.Scope.user:
             self.scopeModel.set(0)
         else: 
             self.scopeModel.set(1)
         
-        if mode == "edit":
-            self.nameEntry.configure(state='disabled')
-            self.scopeCheckbox.configure(state='disabled')
+        if edit_mode:
+            self.nameEntry.configure(state=tc.DISABLED)
+            self.scopeCheckbox.configure(state=tc.DISABLED)
         else:
-            self.nameEntry.configure(state='normal')
+            self.nameEntry.configure(state=tc.NORMAL)
             if  not self.parent.restricted:
-                self.scopeCheckbox.configure(state='normal')
+                self.scopeCheckbox.configure(state=tc.NORMAL)
             else: 
-                self.scopeCheckbox.configure(state='disabled')        
+                self.scopeCheckbox.configure(state=tc.DISABLED)        
             
     def new(self):
         self.refresh("", "")
             
     def save(self):
         name = self.nameModel.get().strip()
-        value = self.txt.get(1.0, "end").strip()
+        value = self.txt.get(1.0, tc.END).strip()
         valid = (len(name) > 0) and (len(value) > 0)
         if not valid:
-            tk.messagebox.showinfo("Empty entry not allowed", "Please fill both the name and the value of the environment variable")
+            tk.messagebox.showinfo(Locale.empty_entry_not_allowed_title.value, Locale.empty_entry_not_allowed_desc.value)
             return
         
         if(self.scopeModel.get() == 0):
             self.parent.winUserEnvVarService.addEnvVariable(name, value)
-#             self.nameEntry.configure(state='disabled')
-#             self.scopeCheckbox.configure(state='disabled')
-            self.refresh(name, value, "edit", "user")
+            self.refresh(name, value, True, envvarservice.Scope.user)
             self.parent.refresh()
         else:
             try:
-                self.parent.winSystemUserEnvVarService.addEnvVariable(name, value)
-#                 self.nameEntry.configure(state='disabled')
-#                 self.scopeCheckbox.configure(state='disabled')
-                self.refresh(name, value, "edit", "system")
+                self.parent.winSystemEnvVarService.addEnvVariable(name, value)
+                self.refresh(name, value, True, envvarservice.Scope.system)
                 self.parent.refresh()
             except WindowsError:
-                tk.messagebox.showwarning("Add/update Environment variable", "Cannot persist changes. You need to open the application in the admin mode in order to change the system environment variables..."
-        )
+                tk.messagebox.showwarning(Locale.admin_role_title.value, Locale.admin_role_desc.title)
 
     def quit(self):
         self.root.destroy()
-
+    
 if __name__ == "__main__":
     root = tk.Tk()
-    EnvironmentVariableEditor(root, None).pack(side="top", fill="both", expand=True)
+    EnvironmentVariableEditor(root, None).pack(side=tc.TOP, fill=tc.BOTH, expand=True)
     root.mainloop()

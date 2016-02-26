@@ -1,7 +1,8 @@
 import tkinter as tk
 import tkinter.ttk as ttk
+import tkinter.constants as tc
 import tkinter.filedialog as fd
-
+from windy.gui.locale import Locale
 
 class EnvironmentVariableImport(ttk.Frame):
     def __init__(self, root, parent):
@@ -9,6 +10,7 @@ class EnvironmentVariableImport(ttk.Frame):
         self.root = root
         self.parent = parent
         
+        root.wm_title(Locale.importThreeDots.value)
         self.createGui()
         self.refresh()
         
@@ -23,29 +25,29 @@ class EnvironmentVariableImport(ttk.Frame):
 
 
     def createGui(self):
-        separatorLabel = ttk.Label(self.root, text="Content to be imported", anchor="w")
-        separatorLabel.grid(column=0, row=0, sticky="W", columnspan=6)
-        separatorLabel.pack(fill="x")
+        separatorLabel = ttk.Label(self.root, text=Locale.content_import.value, anchor=tc.W)
+        separatorLabel.grid(column=0, row=0, sticky=tc.W, columnspan=6)
+        separatorLabel.pack(fill=tc.X)
         
         self.txt = tk.scrolledtext.ScrolledText(self, undo=True)
-        self.txt.grid(column=0, row=1, sticky="EWNS", columnspan=6)
+        self.txt.grid(column=0, row=1, sticky=tc.NSEW, columnspan=6)
         
         self.scopeModel = tk.IntVar(0)
-        self.scopeCheckbox = ttk.Checkbutton(self, text="System", variable=self.scopeModel,
+        self.scopeCheckbox = ttk.Checkbutton(self, text=Locale.system.value, variable=self.scopeModel,
                  onvalue=1, offvalue=0)
-        self.scopeCheckbox.grid(column=0, row=2, sticky='W')
+        self.scopeCheckbox.grid(column=0, row=2, sticky=tc.W)
 
-        button = ttk.Button(self, text="From file...", command=self.openFile)
-        button.grid(column=2, row=3, sticky='E')
+        button = ttk.Button(self, text=Locale.from_file.value, command=self.openFile)
+        button.grid(column=2, row=3, sticky=tc.E)
 
-        button = ttk.Button(self, text="Clear content", command=self.clearContent)
-        button.grid(column=3, row=3, sticky='E')
+        button = ttk.Button(self, text=Locale.clear_content.value, command=self.clearContent)
+        button.grid(column=3, row=3, sticky=tc.E)
 
-        button = ttk.Button(self, text="Save", command=self.save)
-        button.grid(column=4, row=3, sticky='E')
+        button = ttk.Button(self, text=Locale.save.value, command=self.save)
+        button.grid(column=4, row=3, sticky=tc.E)
 
-        button = ttk.Button(self, text="Close", command=self.quit)
-        button.grid(column=5, row=3, sticky='E')
+        button = ttk.Button(self, text=Locale.close.value, command=self.quit)
+        button.grid(column=5, row=3, sticky=tc.E)
 
         self.grid_rowconfigure(0, weight=0)
         self.grid_rowconfigure(1, weight=1)
@@ -54,11 +56,11 @@ class EnvironmentVariableImport(ttk.Frame):
         self.grid_columnconfigure(2, weight=1)
     
     def refresh(self, content=""):
-        self.txt.delete("0.0", "end")
+        self.txt.delete("0.0", tc.END)
         self.txt.insert("0.0", content)
         
         if self.parent.restricted:
-            self.scopeCheckbox.configure(state='disabled')
+            self.scopeCheckbox.configure(state=tc.DISABLED)
 
     def clearContent(self):
         #self.txt.delete("0.0", "end")
@@ -72,11 +74,11 @@ class EnvironmentVariableImport(ttk.Frame):
             self.refresh(content);    
     
     def save(self):
-        content = self.txt.get(1.0, "end").strip()
+        content = self.txt.get(1.0, tc.END).strip()
         
         valid = len(content) > 0
         if not valid:
-            tk.messagebox.showinfo("Empty content not allowed", "Empty content for the import is not allowed. Please add some environment variables.")
+            tk.messagebox.showinfo(Locale.empty_content_title.value, Locale.empty_content_desc.value)
             return
         
         lines = [s.strip() for s in content.splitlines()]
@@ -84,7 +86,7 @@ class EnvironmentVariableImport(ttk.Frame):
             try :
                 name, value = line.split("=")
             except ValueError:
-                tk.messagebox.showinfo("Bad format or empty value", "Bad format or empty entries for the line {line}. Please use name=value format.".format(line=line))
+                tk.messagebox.showinfo(Locale.bad_format_title.value, Locale.bad_format_desc.value.format(line=line))
                 break
             
             name = name.strip()
@@ -96,8 +98,10 @@ class EnvironmentVariableImport(ttk.Frame):
                     try:
                         self.parent.winSystemUserEnvVarService.addEnvVariable(name, value)
                     except WindowsError:
-                        tk.messagebox.showwarning("Import environment variables", "Cannot persist changes. You need to open the application in the admin mode in order to change system environment variables...")
-                        break    
+                        tk.messagebox.showwarning(Locale.import_file_title.value, Locale.import_file_desc.value)
+                        break
+            else:
+                tk.messagebox.showinfo(Locale.bad_format_title.value, Locale.bad_format_desc.value.format(line=line))   
         self.parent.refresh()
                 
     def quit(self):
@@ -105,5 +109,5 @@ class EnvironmentVariableImport(ttk.Frame):
 
 if __name__ == "__main__":
     root = tk.Tk()
-    EnvironmentVariableImport(root, None).pack(side="top", fill="both", expand=True)
+    EnvironmentVariableImport(root, None).pack(side=tc.TOP, fill=tc.BOTH, expand=True)
     root.mainloop()
