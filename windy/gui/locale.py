@@ -52,7 +52,7 @@ class Locale(enum.Enum):
 Windy
 =====
 
-Goal
+Short description
 ----
 Windy is an application for managing Windows user/system environment variables. 
 
@@ -64,8 +64,17 @@ Features
 * Absolutely free and open source
 
 Homepage
+--------
+git [link](https://github.com/zeljko-m-gavrilovic/windy)
+pyPI [link](https://pypi.python.org/pypi/windy)
+
+Notes
+----
+Tested on Windows 7 and Windows 8
+
+Credits
 -------
-[link](https://github.com/zeljko-m-gavrilovic/windy)
+Icon Author Website [link](http://www.iconsmind.com)
     """
     about="About"
     
