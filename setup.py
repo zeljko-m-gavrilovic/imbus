@@ -11,12 +11,12 @@ setup(
         "console_scripts": ['windy = windy.gui.application:main'],
         'gui_scripts': ['windy = windy.gui.application:main', ]
         },
-    description='windy is an application for managing Windows user/system environment variables.',
+    description='windy is Windows GUI application for managing user/system environment variables.',
     long_description=long_description,
-    url='http://github.com/zeljko.m.gavrilovic/windy',
-    author='BigNumbers',
+    url='http://github.com/zeljko-m-gavrilovic/windy',
+    author='bigNumbers',
     author_email='zeljko.m.gavrilovic@gmail.com',
-    license='GPLv3',
+    license='MIT',
     classifiers=[
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
@@ -28,6 +28,6 @@ setup(
         "License :: Freeware",
         "Topic :: Utilities"
       ],
-    keywords=["windows", "environment", "variables", "path", "developer", "java"],
+    keywords=["windows", "environment", "variables", "path", "developer"],
     zip_safe=False
     )
