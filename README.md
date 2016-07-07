@@ -11,10 +11,13 @@ Windows GUI application for managing user/system environment variables.
 * Resizable GUI with the examined views
 * Absolutely free and open source
 
+## How to insttall the windy application
+You can use a Python package manager `pip install windy`, or download a `windy.exe` from the `dist` folder.
+
 ## Homepage
 
-[GitHub](https://github.com/zeljko-m-gavrilovic/windy)
-[PyPI](https://pypi.python.org/pypi/windy)
+code repository: [GitHub](https://github.com/zeljko-m-gavrilovic/windy),
+Python package [PyPI](https://pypi.python.org/pypi/windy).
 
 ## Notes
 
