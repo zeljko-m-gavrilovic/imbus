@@ -23,6 +23,9 @@ Python package [PyPI](https://pypi.python.org/pypi/windy).
 
 Tested on Windows 7 and Windows 8
 
+## License
+MIT
+
 ## Credits
 
 Icon Author Website [link](http://www.iconsmind.com)
