@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['windy.py'],
-             pathex=['c:\\dev\\projects\\workspace\\windy'],
+             pathex=['.'],
              binaries=None,
              datas=None,
              hiddenimports=[],
@@ -21,8 +21,8 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          name='windy',
+          name='windy-0.9.9',
           debug=False,
           strip=False,
           upx=True,
-          console=False , icon='windy.ico')
+          console=False, icon='windy.ico')

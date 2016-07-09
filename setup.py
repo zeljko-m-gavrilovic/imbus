@@ -5,7 +5,7 @@ with open('README.md') as f:
 
 setup(
     name='windy',
-    version='0.9.8.2',
+    version='0.9.9',
     packages = find_packages(),
     entry_points={
         "console_scripts": ['windy = windy.gui.application:main'],
